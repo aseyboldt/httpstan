@@ -84,7 +84,7 @@ def import_services_extension_module(model_name: str) -> ModuleType:
         raise KeyError(f"No module for `{model_name}` found in `{model_directory}`")
     import subprocess
 
-    print(subprocess.call_output(["ldd", module_path]))
+    print(subprocess.check_output(["ldd", module_path]))
     # The module name, which is independent of the filename, is always "stan_services". The module
     # name must be defined in stan_services.cpp, which is compiled before we know with which
     # specific stan model it will be linked with. Since we want to compile stan_services.cpp in

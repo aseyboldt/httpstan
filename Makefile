@@ -37,11 +37,13 @@ LIBRARIES := $(STAN_LIBRARIES)
 INCLUDES_STAN_MATH_LIBS := httpstan/include/boost httpstan/include/Eigen httpstan/include/sundials httpstan/include/tbb
 INCLUDES_STAN := httpstan/include/stan httpstan/include/stan/math $(INCLUDES_STAN_MATH_LIBS)
 INCLUDES := httpstan/include/pybind11 httpstan/include/rapidjson $(INCLUDES_STAN)
+INCLUDES_CONDA := httpstan/include/stan httpstan/include/stan/math
 STANC := httpstan/stanc
 PRECOMPILED_OBJECTS = httpstan/stan_services.o
 
 default: $(LIBRARIES) $(INCLUDES) $(STANC) $(PRECOMPILED_OBJECTS)
 
+conda: $(STANC) $(INCLUDES_CONDA) $(PRECOMPILED_OBJECTS)
 
 ###############################################################################
 # Download archives via HTTP and extract them
@@ -80,9 +82,11 @@ $(HTTP_ARCHIVES_EXPANDED):
 ###############################################################################
 ifeq ($(shell uname -s),Darwin)
 build/stanc:
+	mkdir -p build
 	curl --location https://github.com/stan-dev/stanc3/releases/download/v$(STANC_VERSION)/mac-stanc -o $@ --retry 5 --fail
 else
 build/stanc:
+	mkdir -p build
 	curl --location https://github.com/stan-dev/stanc3/releases/download/v$(STANC_VERSION)/linux-stanc -o $@ --retry 5 --fail
 endif
 

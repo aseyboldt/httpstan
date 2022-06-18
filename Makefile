@@ -42,7 +42,6 @@ PRECOMPILED_OBJECTS = httpstan/stan_services.o
 
 default: $(LIBRARIES) $(INCLUDES) $(STANC) $(PRECOMPILED_OBJECTS)
 
-
 ###############################################################################
 # Download archives via HTTP and extract them
 ###############################################################################
@@ -80,9 +79,11 @@ $(HTTP_ARCHIVES_EXPANDED):
 ###############################################################################
 ifeq ($(shell uname -s),Darwin)
 build/stanc:
+	mkdir -p build
 	curl --location https://github.com/stan-dev/stanc3/releases/download/v$(STANC_VERSION)/mac-stanc -o $@ --retry 5 --fail
 else
 build/stanc:
+	mkdir -p build
 	curl --location https://github.com/stan-dev/stanc3/releases/download/v$(STANC_VERSION)/linux-stanc -o $@ --retry 5 --fail
 endif
 

@@ -82,6 +82,7 @@ def import_services_extension_module(model_name: str) -> ModuleType:
         module_path = next(filter(lambda p: p.suffix in EXTENSION_SUFFIXES, model_directory.iterdir()))
     except (FileNotFoundError, StopIteration):
         raise KeyError(f"No module for `{model_name}` found in `{model_directory}`")
+
     # The module name, which is independent of the filename, is always "stan_services". The module
     # name must be defined in stan_services.cpp, which is compiled before we know with which
     # specific stan model it will be linked with. Since we want to compile stan_services.cpp in
@@ -128,6 +129,11 @@ async def build_services_extension_module(program_code: str, extra_compile_args:
         str(PACKAGE_DIR / "include"),
     ]
 
+    import os.path
+    dirname = Path(os.path.expandvars(str(PACKAGE_DIR)))
+    prefix = dirname.parent.parent.parent.parent
+    include_dirs.append(str(prefix / "include" / "eigen3"))
+
     stan_macros: List[Tuple[str, Optional[str]]] = [
         ("BOOST_DISABLE_ASSERTS", None),
         ("BOOST_PHOENIX_NO_VARIADIC_EXPRESSION", None),
@@ -135,10 +141,22 @@ async def build_services_extension_module(program_code: str, extra_compile_args:
         ("_REENTRANT", None),  # required by stan math / std:lgamma
         # the following is needed on linux for compatibility with libraries built with the manylinux2014 image
         ("_GLIBCXX_USE_CXX11_ABI", "0"),
+        ("TBB_CXX_TYPE", "gcc"),  # TODO
+        ("TBB_INTERFACE_NEW", "true"),
+        ("TBB_INC", str(prefix / "include")),
+        ("TBB_LIB", str(prefix / "lib")),
+        ("PRECOMPILED_HEADERS", "false"),
     ]
 
     if extra_compile_args is None:
-        extra_compile_args = ["-O3", "-std=c++14"]
+        extra_compile_args = [
+            "-O3",
+            "-std=c++14",
+            "-fvisibility=hidden",
+            "-Wno-sign-compare",
+            "-Wno-unused-local-typedefs",
+            "-Wno-unused-but-set-variable",
+        ]
 
     # Note: `library_dirs` is only relevant for linking. It does not tell an extension
     # where to find shared libraries during execution. There are two ways for an

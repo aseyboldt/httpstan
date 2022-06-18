@@ -131,6 +131,8 @@ async def build_services_extension_module(program_code: str, extra_compile_args:
         str(PACKAGE_DIR / "include"),
     ]
 
+    print(PACKAGE_DIR)
+
     stan_macros: List[Tuple[str, Optional[str]]] = [
         ("BOOST_DISABLE_ASSERTS", None),
         ("BOOST_PHOENIX_NO_VARIADIC_EXPRESSION", None),
@@ -158,14 +160,14 @@ async def build_services_extension_module(program_code: str, extra_compile_args:
     extension = setuptools.Extension(
         f"stan_services_{stan_model_name}",  # filename only. Module name is "stan_services"
         language="c++",
-        sources=[str(cpp_code_path)],
+        sources=[str(cpp_code_path), str(PACKAGE_DIR / "stan_services.cpp")],
         define_macros=stan_macros,
         include_dirs=include_dirs,
         libraries=libraries,
         extra_compile_args=extra_compile_args,
-        extra_objects=[
-            str((PACKAGE_DIR / "stan_services.cpp").with_suffix(".o")),
-        ],
+        #extra_objects=[
+        #    str((PACKAGE_DIR / "stan_services.cpp").with_suffix(".o")),
+        #],
     )
 
     extensions = [extension]

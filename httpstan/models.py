@@ -132,6 +132,9 @@ async def build_services_extension_module(program_code: str, extra_compile_args:
     ]
 
     print(PACKAGE_DIR)
+    import os.path
+    dirname = Path(os.path.expandvars(str(PACKAGE_DIR)))
+    print("dirname in models: ", PACKAGE_DIR, dirname)
 
     stan_macros: List[Tuple[str, Optional[str]]] = [
         ("BOOST_DISABLE_ASSERTS", None),
@@ -160,7 +163,7 @@ async def build_services_extension_module(program_code: str, extra_compile_args:
     extension = setuptools.Extension(
         f"stan_services_{stan_model_name}",  # filename only. Module name is "stan_services"
         language="c++",
-        sources=[str(cpp_code_path), str(PACKAGE_DIR / "stan_services.cpp")],
+        sources=[str(cpp_code_path), str(dirname / "stan_services.cpp")],
         define_macros=stan_macros,
         include_dirs=include_dirs,
         libraries=libraries,

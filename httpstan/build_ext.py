@@ -25,11 +25,12 @@ PACKAGE_DIR = Path(__file__).parent.resolve(strict=True)
 # that we can control library loading order.
 class stan_build_ext(build_ext):
     def build_extensions(self) -> None:
-        print("package dir", PACKAGE_DIR)
-        print("LDCXXSHARED", f"{distutils.sysconfig.get_config_vars().get('LDCXXSHARED', '')} ")
-        print("runtime dir", f"{self.compiler.runtime_library_dir_option(str(PACKAGE_DIR / 'lib'))} ")
         import os.path
         dirname = Path(os.path.expandvars(str(PACKAGE_DIR)))
+        print("package dir", PACKAGE_DIR, dirname)
+        print("LDCXXSHARED", f"{os.path.expandvars(distutils.sysconfig.get_config_vars().get('LDCXXSHARED', ''))} ")
+        print("runtime dir", f"{self.compiler.runtime_library_dir_option(str(dirname / 'lib'))} ")
+        """
         self.compiler.set_executable(
             "linker_so",
             (
@@ -42,6 +43,7 @@ class stan_build_ext(build_ext):
                 f"{os.path.expandvars(distutils.sysconfig.get_config_vars().get('LDFLAGS', ''))} "
             )
         )
+        """
         return super().build_extensions()
 
 

@@ -43,7 +43,9 @@ PRECOMPILED_OBJECTS = httpstan/stan_services.o
 
 default: $(LIBRARIES) $(INCLUDES) $(STANC) $(PRECOMPILED_OBJECTS)
 
-conda: $(STANC) $(INCLUDES_CONDA) $(PRECOMPILED_OBJECTS)
+#conda: $(STANC) $(INCLUDES_CONDA) $(PRECOMPILED_OBJECTS)
+#conda: $(STANC) $(INCLUDES_CONDA) $(PRECOMPILED_OBJECTS)
+conda:
 
 ###############################################################################
 # Download archives via HTTP and extract them
